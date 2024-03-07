@@ -1,0 +1,16 @@
+﻿  Button.cpp
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Button.cpp(44,15): warning C4244: "inicjowanie": konwersja z "T" do "float", możliwa utrata danych
+          with
+          [
+              T=int
+          ]
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Button.cpp(45,15): warning C4244: "inicjowanie": konwersja z "T" do "float", możliwa utrata danych
+          with
+          [
+              T=int
+          ]
+  Cell.cpp
+  Game.cpp
+  main.cpp
+  Generowanie kodu...
+  ProblemLiszaja.vcxproj -> C:\Users\USER\Desktop\ProblemLiszaja\x64\Debug\ProblemLiszaja.exe
