@@ -21,7 +21,8 @@ public:
     void updateBoard();
     void drawBoard();
     void restartGame();
-    
+    void pauseCells();
+    void resumeCells();
 
     void pollEvents();
     void render();
@@ -44,10 +45,12 @@ private:
     sf::Text Immunity;
     sf::Text InfectionTime;
     Button restartButton;
+    Button startButton;
+    Button stopButton;
     
     std::vector<Button> buttons;
     
-    
+    bool isPaused;
     int GRID_SIZE;
     int WINDOW_SIZE;
     int GRID_WINDOW_SIZE;
@@ -55,7 +58,10 @@ private:
     int IMMUNITY_TIME; // cas odpornoœci
     int CUSTOMINFECTION_TIME;//czas trwania zara¿enia
     double PROBABILITY_OF_INFECTION;
+    bool simulationStarted;
+    bool simulationRunning;
 
     std::vector<std::vector<Cell>> board;
-    
+    std::pair<int, int> selectedCell = { -1, -1 };
+    std::chrono::steady_clock::time_point simulationStartTime;
 };

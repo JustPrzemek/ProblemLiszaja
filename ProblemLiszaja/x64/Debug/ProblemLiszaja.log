@@ -1,16 +1,12 @@
-﻿  Button.cpp
-C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Button.cpp(44,15): warning C4244: "inicjowanie": konwersja z "T" do "float", możliwa utrata danych
-          with
-          [
-              T=int
-          ]
-C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Button.cpp(45,15): warning C4244: "inicjowanie": konwersja z "T" do "float", możliwa utrata danych
-          with
-          [
-              T=int
-          ]
-  Cell.cpp
-  Game.cpp
-  main.cpp
-  Generowanie kodu...
+﻿  Game.cpp
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,52): warning C4244: "argument": konwersja z "int" do "T", możliwa utrata danych
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,52): warning C4244:         with
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,52): warning C4244:         [
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,52): warning C4244:             T=float
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,52): warning C4244:         ]
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,39): warning C4244: "argument": konwersja z "int" do "T", możliwa utrata danych
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,39): warning C4244:         with
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,39): warning C4244:         [
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,39): warning C4244:             T=float
+C:\Users\USER\Desktop\ProblemLiszaja\ProblemLiszaja\Game.cpp(54,39): warning C4244:         ]
   ProblemLiszaja.vcxproj -> C:\Users\USER\Desktop\ProblemLiszaja\x64\Debug\ProblemLiszaja.exe

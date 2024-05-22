@@ -2,12 +2,15 @@
 
 
 Game::Game() :  WINDOW_SIZE(1000), GRID_WINDOW_SIZE(800), INFECTION_TIME(1000),
-IMMUNITY_TIME(4000), CUSTOMINFECTION_TIME(6000), PROBABILITY_OF_INFECTION(0.5)
+IMMUNITY_TIME(4000), CUSTOMINFECTION_TIME(6000), PROBABILITY_OF_INFECTION(0.5), simulationStarted(false), simulationRunning(false)
 {
     std::string input;
+       
+    int minGridSize = 5; 
+    int maxGridSize = 200;
 
     while (true) {
-        std::cout << "Podaj wielkosc siatki (GRID_SIZE): ";
+        std::cout << "Podaj wielkosc siatki (" << minGridSize << "-" << maxGridSize << "): ";
         std::getline(std::cin, input);
 
         bool isNumeric = true;
@@ -19,8 +22,14 @@ IMMUNITY_TIME(4000), CUSTOMINFECTION_TIME(6000), PROBABILITY_OF_INFECTION(0.5)
         }
 
         if (isNumeric) {
-            GRID_SIZE = std::stoi(input);
-            break;
+            int gridSize = std::stoi(input);
+            if (gridSize >= minGridSize && gridSize <= maxGridSize) {
+                GRID_SIZE = gridSize;
+                break;
+            }
+            else {
+                std::cerr << "Podana wielkosc siatki musi byc w zakresie od " << minGridSize << " do " << maxGridSize << "." << std::endl;
+            }
         }
         else {
             std::cerr << "Bledne dane. Wprowadz liczbe calkowita." << std::endl;
@@ -40,12 +49,14 @@ Game::~Game()
 
 void Game::initWindow()
 {
-    window = new sf::RenderWindow(sf::VideoMode(WINDOW_SIZE, GRID_WINDOW_SIZE), "Problem Liszaja");
+    window = new sf::RenderWindow(sf::VideoMode(WINDOW_SIZE, GRID_WINDOW_SIZE), "Problem Liszaja", sf::Style::Titlebar | sf::Style::Close);
+
+    sf::View view(sf::FloatRect(0, 0, WINDOW_SIZE, GRID_WINDOW_SIZE));
+    window->setView(view);
 }
 
 void Game::initializeBoard() {
     board.resize(GRID_SIZE, std::vector<Cell>(GRID_SIZE));
-    board[GRID_SIZE / 2][GRID_SIZE / 2].infect();
 }
 
 void Game::resetHealthyCell()
@@ -69,14 +80,17 @@ void Game::restartGame()
 {
     resetHealthyCell();
     initializeBoard();
+    simulationStarted = false;
 }
 
 void Game::update()
 {
 
     pollEvents();
-    updateBoard();
-
+     if (simulationRunning) {
+         updateBoard();
+     }
+   
 }
 
 void Game::render()
@@ -107,7 +121,11 @@ void Game::drawBoard() {
             case Cell::Immune:
                 cell.setFillColor(sf::Color::White);
                 break;
+            case Cell::Dead:
+                cell.setFillColor(sf::Color::Black);
+                break;
             }
+
 
             window->draw(cell);
         }
@@ -140,8 +158,8 @@ void Game::pollEvents()
             else if (buttons[1].isMouseOver(*window)) {
                 INFECTION_TIME -= 100;
 
-                if (INFECTION_TIME < 0) {
-                    INFECTION_TIME = 0;
+                if (INFECTION_TIME <= 0) {
+                    INFECTION_TIME = 100;
                 }
             }
             else if (buttons[2].isMouseOver(*window)) {
@@ -181,11 +199,39 @@ void Game::pollEvents()
             else if (restartButton.isMouseOver(*window)) {
                 restartGame();
             }
+            else if (startButton.isMouseOver(*window)) {
+                simulationStarted = true;
+                simulationRunning = true;
+                Cell::setSimulationRunning(true);
+                resumeCells();
+            }
+            else if (stopButton.isMouseOver(*window)) {
+                simulationRunning = false;
+                Cell::setSimulationRunning(false);
+                pauseCells();
+            }
+            else if (ev.mouseButton.button == sf::Mouse::Left) {
+                // Obliczanie wybranej komórki
+                int x = ev.mouseButton.x / (GRID_WINDOW_SIZE / GRID_SIZE);
+                int y = ev.mouseButton.y / (GRID_WINDOW_SIZE / GRID_SIZE);
+                selectedCell = { x, y };
+                // Zara¿anie wybranej komórki
+                if (selectedCell.first >= 0 && selectedCell.first < GRID_SIZE && selectedCell.second >= 0 && selectedCell.second < GRID_SIZE)
+                {
+                    board[selectedCell.first][selectedCell.second].infect();
+                    if (!simulationRunning)
+                    {
+                        board[selectedCell.first][selectedCell.second].pause();
+                    }
+                }
+            }
+           
             break;
            
         }
     }
 }
+
 
 void Game::handleMouseMoved() {
     for (auto& button : buttons) {
@@ -202,6 +248,20 @@ void Game::handleMouseMoved() {
     }
     else {
         restartButton.setBackColor(sf::Color::White);
+    }
+
+    if (startButton.isMouseOver(*window)) {
+        startButton.setBackColor(sf::Color::Green);
+    }
+    else {
+        startButton.setBackColor(sf::Color::White);
+    }
+
+    if (stopButton.isMouseOver(*window)) {
+        stopButton.setBackColor(sf::Color::Red);
+    }
+    else {
+        stopButton.setBackColor(sf::Color::White);
     }
 }
 
@@ -276,7 +336,7 @@ void Game::initText()
 
 void Game::initButton()
 {
-   
+    
     buttons.push_back(Button("+", sf::Vector2f(50, 50), 30, sf::Color::White, sf::Color::Black));
     buttons.push_back(Button("-", sf::Vector2f(50, 50), 30, sf::Color::White, sf::Color::Black));
 
@@ -300,9 +360,17 @@ void Game::initButton()
         buttons[i+1].setPosition(sf::Vector2f(900, static_cast<float>(150 + i * 70)));
     }
 
-    restartButton = Button("Restart", sf::Vector2f(100, 50), 17, sf::Color::White, sf::Color::Black);
+    restartButton = Button("Restart", sf::Vector2f(100, 40), 17, sf::Color::White, sf::Color::Black);
     restartButton.setPosition(sf::Vector2f(850, 700));
     restartButton.setFont(arial);
+
+    startButton = Button("Start", sf::Vector2f(100, 40), 17, sf::Color::White, sf::Color::Black);
+    startButton.setPosition(sf::Vector2f(850, 650)); 
+    startButton.setFont(arial);
+
+    stopButton = Button("Stop", sf::Vector2f(100, 40), 17, sf::Color::White, sf::Color::Black);
+    stopButton.setPosition(sf::Vector2f(850, 750));
+    stopButton.setFont(arial);
 }
 
 
@@ -311,4 +379,29 @@ void Game::drawButtons() {
         button.drawTo(*window);
     }
     restartButton.drawTo(*window);
+    startButton.drawTo(*window);
+    stopButton.drawTo(*window);
+}
+
+void Game::pauseCells()
+{
+    for (int i = 0; i < GRID_SIZE; ++i)
+    {
+        for (int j = 0; j < GRID_SIZE; ++j)
+        {
+            board[i][j].pause();
+        }
+    }
+
+}
+
+void Game::resumeCells()
+{
+    for (int i = 0; i < GRID_SIZE; ++i)
+    {
+        for (int j = 0; j < GRID_SIZE; ++j)
+        {
+            board[i][j].resume();
+        }
+    }
 }

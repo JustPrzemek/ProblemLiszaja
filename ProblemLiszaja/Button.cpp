@@ -7,6 +7,7 @@ Button::Button(std::string t, sf::Vector2f size, int charSize, sf::Color bcolor,
 	text.setCharacterSize(charSize);
 	button.setSize(size);
 	button.setFillColor(bcolor);
+
 }
 
 void Button::setFont(sf::Font& font)
